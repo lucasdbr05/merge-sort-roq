@@ -1,0 +1,34 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{fullpage}
+\usepackage[usenames]{color}
+\usepackage[color]{coqdoc}
+\usepackage{url}
+\usepackage{makeidx,hyperref}
+\usepackage[all]{xy}
+\usepackage{soul,xcolor}
+
+\usepackage{mathpartir}
+\usepackage{tcolorbox}
+\usepackage{amsmath,amssymb}
+
+\newcommand{\tto}{\twoheadrightarrow}
+\newcommand{\ott}{\twoheadleftarrow}
+
+\newcommand{\flavio}[1]{{\color{red}#1}}
+\newcommand{\cflavio}[2]{\st{#1}{\color{red} #2}}
+\newcommand{\rflavio}[1]{\st{#1}}
+\newcommand{\mtulio}[1]{{\color{blue}#1}}
+
+\title{A Formalização da correção do lgoritmo Mergesort}
+\author{Nome e matrícula}
+\date{\today}
+
+\begin{document}
+\maketitle
+\input{merge_sort.v}
+\end{document}
