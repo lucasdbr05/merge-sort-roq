@@ -55,17 +55,27 @@ Function mergesort (l: list nat) {measure length l} :=
   | [] => []
   | [h] => [h]
   | h1::h2::l' =>
-      let l1_half := Nat.div2 (length l) in
+      let l1_half := length(l)/2 in
       let l1 := firstn l1_half l in
       let l2 := skipn l1_half l in
       merge(mergesort l1 , mergesort l2)
   end.
-Proof.
-  - intros. rewrite length_skipn. apply Nat.sub_lt. apply Nat.le_div2_diag_l. simpl. apply Nat.lt_0_succ.
-  - intros. rewrite length_firstn. apply Nat.le_lt_trans with (Nat.div2 (length (h1 :: h2 :: l'))).
-    + lia.
-    + apply Nat.lt_div2. simpl. lia.
-Qed.
+  Proof.
+  - intros. rewrite skipn_length. apply Nat.sub_lt.
+    + apply Nat.lt_le_incl. apply Nat.div_lt.
+      * simpl. apply Nat.lt_0_succ.
+        * apply Nat.lt_1_2.
+      + apply Nat.div_str_pos. simpl. split.
+      * apply Nat.lt_0_2.
+        * apply Peano.le_n_S. apply Peano.le_n_S. apply Peano.le_0_n.  
+    - intros. rewrite firstn_length. rewrite min_l.
+    + apply Nat.div_lt.
+      * simpl. apply Nat.lt_0_succ.
+        * apply Nat.lt_1_2.
+      + apply Nat.lt_le_incl. apply Nat.div_lt.
+      * simpl. apply Nat.lt_0_succ.
+        * apply Nat.lt_1_2.  
+  Defined.
 
 (** A correção do algoritmo [mergesort] é obtida com a prova do teorema abaixo: *)
 
@@ -73,4 +83,3 @@ Theorem mergesort_correto: forall l, Sorted le (mergesort l) /\ Permutation l (m
 Proof. Admitted.
 
 
-(** Repositório: %\url{https://github.com/flaviodemoura/merge_sort}% *)
