@@ -33,6 +33,7 @@ Inductive ord: list nat -> Prop :=
   | ord_all: forall x y l, x <= y -> ord (y::l) -> ord (x::y::l).
   
 Definition le_all x l := forall y, In y l -> x <= y.
+
 Definition sorted_pair_lst (p: list nat * list nat) := ord (fst p) /\ ord (snd p).
      
 
@@ -43,7 +44,6 @@ Definition first_is_smallest (l : list nat) : Prop :=
   end.
 
 
-(** O algoritmo [mergesort] é definido como a seguir: *)
 
 Function mergesort (l: list nat) {measure length l} :=
   match l with
@@ -73,7 +73,76 @@ Function mergesort (l: list nat) {measure length l} :=
   Defined.
 
 
-Theorem mergesort_correto: forall l, ord (mergesort l) /\
-                                       Permutation (mergesort l) l.
+  Theorem sorted_implies_head_is_smallest : forall l, ord l -> first_is_smallest l.
+  Proof. Admitted.
+
+  Theorem tail_of_ord_l_is_sorted : forall (h1 : nat) (l1 : list nat), ord (h1 :: l1) -> ord l1.
+  Proof. Admitted.
+  
+  Lemma in_merge : forall p x, In x (merge p) -> In x (fst p) \/ In x (snd p).
+  Proof. Admitted.
+
+  Lemma x_leq_all_in_l_implies_x_concat_l_is_sorted : forall x l, (forall y, In y l -> x <= y) -> ord l -> ord (x :: l).
+  Proof. Admitted.
+
+Theorem merge_ordena: forall p, sorted_pair_lst p -> ord (merge p).
+  Proof.
+    intros p [H1 H2]. 
+    functional induction (merge p).
+    - simpl. assumption.
+    - simpl. assumption.
+    - simpl in H1, H2, IHl. 
+      assert(H3:=H1).
+      apply tail_of_ord_l_is_sorted in H1.  
+      apply sorted_implies_head_is_smallest in H3. unfold first_is_smallest in H3.
+      specialize (IHl H1 H2).
+      assert(H4:=H2).
+      apply sorted_implies_head_is_smallest in H4.  unfold first_is_smallest in H4. 
+      assert (H5 : forall x, In x tl2 -> hd1 <= x). {
+      intros x HIn.
+      specialize (H4 x HIn). 
+      apply Nat.leb_le in e0.
+      transitivity hd2; auto.
+       }
+      apply x_leq_all_in_l_implies_x_concat_l_is_sorted.
+      intros y HIn. apply in_merge in HIn.  simpl in HIn.
+      destruct HIn as [HIn_tl1 | [H_y_eq_hd2 | HIn_tl2]].
+      + apply H3. assumption.
+      + subst y. apply Nat.leb_le. assumption.
+      + apply H5. assumption.
+      + apply IHl.
+    - simpl in H1, H2, IHl. 
+      assert(H3:=H2).
+      apply tail_of_ord_l_is_sorted in H2.  
+      apply sorted_implies_head_is_smallest in H3. unfold first_is_smallest in H3.
+      specialize (IHl H1 H2).
+      assert(H4:=H1).
+      apply sorted_implies_head_is_smallest in H4.  unfold first_is_smallest in H4.
+      assert (H5 : forall x, In x tl1 -> hd2 <= x). {
+        intros x HIn.
+        specialize (H4 x HIn). 
+        apply Nat.leb_nle in e0.
+        transitivity hd2; auto.
+        apply Nat.nle_gt in e0. 
+        transitivity hd1.
+       - apply Nat.lt_le_incl.
+        assumption. 
+       - assumption. 
+       } 
+       apply x_leq_all_in_l_implies_x_concat_l_is_sorted.
+      intros y HIn. apply in_merge in HIn.  simpl in HIn.
+      destruct HIn as [HIn_hd1_tl1 | HIn_tl2].
+      destruct HIn_hd1_tl1 as [HIn_hd1_tl4 | HIn_tl5].
+      + subst y. apply  Nat.leb_nle in e0. apply Nat.nle_gt in e0. 
+        apply Nat.lt_le_incl in e0. assumption. 
+      + apply H5. assumption.
+      + apply H3. assumption.
+      + apply IHl.
+
+  Qed.
+
+
+
+Theorem mergesort_correto: forall l, ord (mergesort l) /\ Permutation (mergesort l) l.
 Proof. Admitted.
 
