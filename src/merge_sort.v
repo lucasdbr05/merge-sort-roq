@@ -18,35 +18,30 @@ Function merge (p: list nat * list nat) {measure len p}:=
   match p with
   | ([], l2) => l2
   | (l1, []) => l1
-  | (h1::l1, h2::l2) =>
-      if h1 <=? h2
-      then h1::(merge (l1,h2::l2))
-                else h2::(merge (h1::l1,l2))
-                end.
+  | ((hd1 :: tl1) as l1, (hd2 :: tl2) as l2) =>
+          if hd1 <=? hd2 then hd1 :: merge (tl1, l2)
+          else hd2 :: merge (l1, tl2)
+  end.
 Proof.
   - auto.
   - intros. unfold len. simpl. lia.
 Qed.
 
-(** A seguir apresentamos algumas definições e lemas que podem ser úteis. Eles podem ser modificados ou removidos de acordo com a sua estratégia de prova. Outros resultados auxiliares podem ser adicionados, se necessário. *)
-
+Inductive ord: list nat -> Prop :=  
+  | ord_nil: ord nil
+  | ord_one: forall h, ord (h::nil)
+  | ord_all: forall x y l, x <= y -> ord (y::l) -> ord (x::y::l).
+  
 Definition le_all x l := forall y, In y l -> x <= y.
+Definition sorted_pair_lst (p: list nat * list nat) := ord (fst p) /\ ord (snd p).
+     
 
-Lemma le_all_sorted: forall l x, Sorted le l -> le_all x l -> Sorted le (x::l).
-Proof.
-  induction l. Admitted.
- 
-Lemma sorted_le_all: forall l x, Sorted le (x::l) -> le_all x l.
-Proof.
-  induction l. Admitted.
+Definition first_is_smallest (l : list nat) : Prop :=
+  match l with
+  | nil => True
+  | hd :: tl => forall x, In x tl -> hd <= x
+  end.
 
-Lemma merge_permuta: forall (l1 l2: list nat), Permutation (l1 ++ l2) (merge(l1,l2)).
-Proof.
-  induction l1. Admitted.
-
-Lemma merge_correto: forall l1 l2, Sorted le l1 -> Sorted le l2 -> Sorted le (merge (l1,l2)).
-Proof.
-  induction l1 as [ | h1 l1']. Admitted.
 
 (** O algoritmo [mergesort] é definido como a seguir: *)
 
@@ -77,9 +72,8 @@ Function mergesort (l: list nat) {measure length l} :=
         * apply Nat.lt_1_2.  
   Defined.
 
-(** A correção do algoritmo [mergesort] é obtida com a prova do teorema abaixo: *)
 
-Theorem mergesort_correto: forall l, Sorted le (mergesort l) /\ Permutation l (mergesort l).
+Theorem mergesort_correto: forall l, ord (mergesort l) /\
+                                       Permutation (mergesort l) l.
 Proof. Admitted.
-
 
