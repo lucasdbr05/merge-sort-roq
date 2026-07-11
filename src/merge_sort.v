@@ -185,7 +185,15 @@ Theorem merge_ordena: forall p, sorted_pair_lst p -> ord (merge p).
 
   Qed.
 
-
+Lemma  mergesort_ordena: forall l, ord (mergesort l).
+  Proof.
+  intros l.
+  functional induction (mergesort l).
+  -  apply ord_nil. 
+  - apply ord_one.
+  - apply merge_ordena.
+    split; assumption.
+Qed.
 
 Theorem mergesort_correto: forall l, ord (mergesort l) /\ Permutation (mergesort l) l.
 Proof. Admitted.
