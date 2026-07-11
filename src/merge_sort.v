@@ -74,16 +74,60 @@ Function mergesort (l: list nat) {measure length l} :=
 
 
   Theorem sorted_implies_head_is_smallest : forall l, ord l -> first_is_smallest l.
-  Proof. Admitted.
+  Proof.
+    intros l H.
+    induction H as [| h | x y l Hxy Hord IH].
+    - unfold first_is_smallest.
+      trivial.
+    -  unfold first_is_smallest.
+      intros x HIn.
+      destruct HIn.
+    -  unfold first_is_smallest.
+      intros z HIn.
+      destruct HIn as [Hz | HInTail].
+        subst z.
+        assumption.
+        apply IH in HInTail.
+        transitivity y; auto.
+  Qed.
 
   Theorem tail_of_ord_l_is_sorted : forall (h1 : nat) (l1 : list nat), ord (h1 :: l1) -> ord l1.
-  Proof. Admitted.
+  Proof.
+     intros h1 l1 H.  
+    induction l1 as [|h2 l2 IH].  
+    - apply ord_nil.  
+    - inversion H; subst. 
+      assumption. 
+  Qed.
   
   Lemma in_merge : forall p x, In x (merge p) -> In x (fst p) \/ In x (snd p).
-  Proof. Admitted.
+  Proof.
+    intros p x H.
+    functional induction (merge p).
+    -  simpl in H. right. assumption.
+    - simpl in H. left. assumption.
+    -  simpl in H. destruct H as [H | H].
+        * left. left. assumption.
+        * apply IHl in H. destruct H as [H | H].
+          -- left. right. assumption.
+          -- right. assumption.
+      -  simpl in H. destruct H as [H | H].
+        + right. left. assumption.
+        + apply IHl in H. destruct H as [H | H].
+          * left. assumption.
+          * right. right. assumption.
+  Qed.
 
   Lemma x_leq_all_in_l_implies_x_concat_l_is_sorted : forall x l, (forall y, In y l -> x <= y) -> ord l -> ord (x :: l).
-  Proof. Admitted.
+  Proof.
+    intros x l H_le H_ord.
+    destruct l as [| hd tl].
+    - apply ord_one. 
+    -  constructor.
+      +  apply H_le. 
+        left. reflexivity. 
+      + assumption.
+  Qed.
 
 Theorem merge_ordena: forall p, sorted_pair_lst p -> ord (merge p).
   Proof.
