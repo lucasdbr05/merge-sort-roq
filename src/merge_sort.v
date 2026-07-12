@@ -1,3 +1,10 @@
+(* Video: https://youtu.be/ST0HXY9y1u4 *)
+(**
+  Lucas Lima: 231003406
+  Adrielly Medeiros: 241012561
+ **)
+
+
 Require Import List.
 Import ListNotations.
 Require Import Recdef.
